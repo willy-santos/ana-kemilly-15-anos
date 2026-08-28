@@ -447,11 +447,10 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .name-shine::after,
   .home-name-shine::after {
-    animation: none;
-    opacity: 0;
-  }
+  animation: none;
+  opacity: 0;
+}
 }
 
 

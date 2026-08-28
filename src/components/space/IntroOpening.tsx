@@ -307,11 +307,10 @@ useEffect(() => {
         </p>
 
         {/* Momento principal */}
-       <div
+      <div
   className="animate-intro-name relative flex flex-col items-center"
   style={{
-    opacity: morphing ? 0 : 1,
-    transition: "opacity 90ms ease-out",
+    opacity: 1,
   }}
 >
   <span
@@ -350,7 +349,7 @@ useEffect(() => {
 
   <h1
   ref={tituloRef}
-  className="relative z-10 font-display text-5xl uppercase leading-tight tracking-[0.14em] sm:text-7xl"
+  className="relative z-10 whitespace-nowrap font-display text-5xl uppercase leading-tight tracking-[0.14em] sm:text-7xl"
 >
   <span className="name-shine" data-text={evento.aniversariante}>
     {evento.aniversariante}

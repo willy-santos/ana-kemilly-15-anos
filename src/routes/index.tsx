@@ -89,7 +89,7 @@ function Inicio() {
       <h1
         ref={tituloRef}
         data-text={evento.aniversariante}
-        className={`text-cosmic home-name-shine ${tituloVisivel} mt-6 font-display font-[350] text-5xl uppercase leading-tight tracking-[0.14em] sm:text-7xl`}
+        className={`text-cosmic home-name-shine ${tituloVisivel} mt-6 whitespace-nowrap font-display font-[350] text-5xl uppercase leading-tight tracking-[0.14em] sm:text-7xl`}
       >
         {evento.aniversariante}
       </h1>
