@@ -129,7 +129,7 @@ const onFim = useCallback(() => {
   marcarIntroExibida();
 }, [marcarIntroExibida]);
 
-
+// Cloudflare automatic deploy test
   /** Elementos ao redor do título: aparecem quando a transição começa. */
   const revelar = fase === "intro" ? "opacity-0" : "animate-rise-in";
 
