@@ -28,15 +28,11 @@ const DURACAO_MORPH = 1250;
 const SUAVE = "cubic-bezier(0.22, 1, 0.36, 1)";
 
 type Props = {
-  /** Título "ANA KEMILLY" já renderizado na Home (destino da transição). */
   alvoTitulo: RefObject<HTMLElement | null>;
-  /** Linha "15 ANOS" da Home (destino da transição). */
   alvoSubtitulo: RefObject<HTMLElement | null>;
-  /** Astronauta já renderizado na Home (destino da transição). */
   alvoAstronauta: RefObject<HTMLElement | null>;
-  /** Chamado quando o título começa a se mover para a Home. */
+  tamanhoTitulo: number | null;
   onTransicao: () => void;
-  /** Chamado quando a Home assume o título definitivamente. */
   onFim: () => void;
 };
 
@@ -50,6 +46,7 @@ export function IntroOpening({
   alvoTitulo,
   alvoSubtitulo,
   alvoAstronauta,
+  tamanhoTitulo,
   onTransicao,
   onFim,
 }: Props) {
@@ -125,11 +122,11 @@ useEffect(() => {
       const a = origem.getBoundingClientRect();
       const b = destino.getBoundingClientRect();
       if (!a.width || !b.width) return;
-      const escala = b.width / a.width;
-      const dx = b.left + b.width / 2 - (a.left + a.width / 2);
-      const dy = b.top + b.height / 2 - (a.top + a.height / 2);
-      origem.style.transition = `transform ${DURACAO_MORPH}ms ${SUAVE}`;
-      origem.style.transform = `translate3d(${dx}px, ${dy}px, 0) scale(${escala})`;
+      const dx = b.left - a.left;
+const dy = b.top - a.top;
+
+origem.style.transition = `transform ${DURACAO_MORPH}ms ${SUAVE}`;
+origem.style.transform = `translate3d(${dx}px, ${dy}px, 0)`;
     };
 let tMorph: number | undefined;
  const tInicio = window.setTimeout(() => {
@@ -343,9 +340,12 @@ return (
   />
 </span>
 
-  <h1
+ <h1
   ref={tituloRef}
-  className="relative z-10 whitespace-nowrap font-display text-5xl uppercase leading-tight tracking-[0.14em] sm:text-7xl"
+  className="relative z-10 whitespace-nowrap font-display uppercase leading-tight tracking-[0.035em]"
+  style={{
+    fontSize: tamanhoTitulo ? `${tamanhoTitulo}px` : undefined,
+  }}
 >
   <span className="name-shine" data-text={evento.aniversariante}>
     {evento.aniversariante}

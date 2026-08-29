@@ -1,6 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { CalendarDays, Clock, MapPin, MessageCircle, X } from "lucide-react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import { useIntro } from "@/routes/__root";
 
 import astronauta from "@/assets/astronauta.png";
@@ -61,10 +67,60 @@ useEffect(() => {
   return () => window.clearTimeout(timer);
 }, [fase]);
   const tituloRef = useRef<HTMLHeadingElement>(null);
-  const subtituloRef = useRef<HTMLParagraphElement>(null);
-  const astronautaRef = useRef<HTMLImageElement>(null);
+const subtituloRef = useRef<HTMLParagraphElement>(null);
+const astronautaRef = useRef<HTMLImageElement>(null);
 
- const onTransicao = useCallback(() => {
+const [tamanhoTitulo, setTamanhoTitulo] = useState<number | null>(null);
+
+useLayoutEffect(() => {
+  const ajustarTitulo = () => {
+    const larguraDisponivel = Math.min(
+      window.innerWidth - 48,
+      720,
+    );
+
+    let tamanho = Math.min(
+      window.innerWidth * 0.115,
+      62,
+    );
+
+    const medir = document.createElement("span");
+
+    medir.textContent = evento.aniversariante;
+    medir.style.position = "absolute";
+    medir.style.visibility = "hidden";
+    medir.style.whiteSpace = "nowrap";
+    medir.style.fontFamily = '"Cormorant Garamond", serif';
+    medir.style.fontWeight = "350";
+    medir.style.letterSpacing = "0.035em";
+    medir.style.textTransform = "uppercase";
+    medir.style.fontSize = `${tamanho}px`;
+
+    document.body.appendChild(medir);
+
+    while (
+      medir.getBoundingClientRect().width > larguraDisponivel &&
+      tamanho > 18
+    ) {
+      tamanho -= 0.25;
+      medir.style.fontSize = `${tamanho}px`;
+    }
+
+    medir.remove();
+
+    setTamanhoTitulo(tamanho);
+  };
+
+  ajustarTitulo();
+
+  window.addEventListener("resize", ajustarTitulo);
+
+  return () => {
+    window.removeEventListener("resize", ajustarTitulo);
+  };
+}, []);
+
+const onTransicao = useCallback(() => {
   setFase("transicao");
 }, []);
 
@@ -72,6 +128,7 @@ const onFim = useCallback(() => {
   setFase("home");
   marcarIntroExibida();
 }, [marcarIntroExibida]);
+
 
   /** Elementos ao redor do título: aparecem quando a transição começa. */
   const revelar = fase === "intro" ? "opacity-0" : "animate-rise-in";
@@ -133,12 +190,13 @@ const onFim = useCallback(() => {
    className="mx-auto flex w-full max-w-3xl flex-col items-center px-5 pb-24 pt-28 text-center sm:pt-32">
       {!introExibida && (
         <IntroOpening
-          alvoTitulo={tituloRef}
-          alvoSubtitulo={subtituloRef}
-          alvoAstronauta={astronautaRef}
-          onTransicao={onTransicao}
-          onFim={onFim}
-        />
+  alvoTitulo={tituloRef}
+  alvoSubtitulo={subtituloRef}
+  alvoAstronauta={astronautaRef}
+  tamanhoTitulo={tamanhoTitulo}
+  onTransicao={onTransicao}
+  onFim={onFim}
+/>
       )}
 
       <p
@@ -155,14 +213,18 @@ const onFim = useCallback(() => {
       </p>
 
       {/* Título idêntico ao da abertura */}
-      <h1
-        ref={tituloRef}
-        data-text={evento.aniversariante}
-        className={`text-cosmic home-name-shine ${tituloVisivel} mt-6 whitespace-nowrap font-display font-[350] text-5xl uppercase leading-tight tracking-[0.14em] sm:text-7xl`}
-      >
-        {evento.aniversariante}
-      </h1>
-
+  <h1
+  ref={tituloRef}
+  data-text={evento.aniversariante}
+  className={`text-cosmic home-name-shine ${tituloVisivel} mt-6 font-display font-[350] uppercase leading-tight tracking-[0.035em] whitespace-nowrap`}
+  style={{
+    fontSize: tamanhoTitulo ? `${tamanhoTitulo}px` : undefined,
+    width: "fit-content",
+    maxWidth: "none",
+  }}
+>
+  {evento.aniversariante}
+</h1>
       {/* Mesmo afastamento usado na abertura */}
       <p
         ref={subtituloRef}
