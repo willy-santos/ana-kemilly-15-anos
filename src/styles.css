@@ -163,9 +163,10 @@
 }
 
 @utility glass-panel {
-  background: oklch(0.28 0.07 292 / 0.42);
+  background: oklch(0.28 0.07 292 / 0.68);
   border: 1px solid oklch(0.85 0.06 310 / 0.16);
-  backdrop-filter: blur(14px);
+ backdrop-filter: blur(950px);
+-webkit-backdrop-filter: blur(950px);
   box-shadow: var(--shadow-soft);
 }
 
@@ -600,9 +601,7 @@
   will-change: transform, opacity;
 }
 
-@utility animate-page-in-left {
-  animation: page-in-left 0.28s cubic-bezier(0.22, 0.61, 0.36, 1) both;
-}
+
 @keyframes intro-loading-in {
   from {
     opacity: 0;
@@ -613,4 +612,15 @@
     opacity: 1;
     transform: translateY(0);
   }
+}
+.confirmation-card {
+  position: relative;
+  overflow: hidden;
+  background: oklch(0.16 0.04 292 / 0.95);
+  border: 1px solid oklch(0.85 0.06 310 / 0.16);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.35),
+    var(--shadow-glow);
 }

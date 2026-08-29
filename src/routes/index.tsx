@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { CalendarDays, Clock, MapPin } from "lucide-react";
-import { useCallback, useRef, useState } from "react";
+import { CalendarDays, Clock, MapPin, MessageCircle, X } from "lucide-react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useIntro } from "@/routes/__root";
 
 import astronauta from "@/assets/astronauta.png";
@@ -38,21 +38,40 @@ function Inicio() {
 
   /** "intro" = abertura no ar · "transicao" = título viajando · "home" = Home assumiu */
   const [fase, setFase] = useState<"intro" | "transicao" | "home">(
-    introExibida ? "home" : "intro",
-  );
+  introExibida ? "home" : "intro",
+);
 
+useEffect(() => {
+  if (introExibida) {
+    setFase("home");
+  }
+}, [introExibida]);
+const [mostrarConfirmacao, setMostrarConfirmacao] = useState(false);
+
+useEffect(() => {
+  if (fase !== "home") {
+    setMostrarConfirmacao(false);
+    return;
+  }
+
+  const timer = window.setTimeout(() => {
+    setMostrarConfirmacao(true);
+  }, 1500);
+
+  return () => window.clearTimeout(timer);
+}, [fase]);
   const tituloRef = useRef<HTMLHeadingElement>(null);
   const subtituloRef = useRef<HTMLParagraphElement>(null);
   const astronautaRef = useRef<HTMLImageElement>(null);
 
-  const onTransicao = useCallback(() => {
-    setFase("transicao");
-  }, []);
+ const onTransicao = useCallback(() => {
+  setFase("transicao");
+}, []);
 
-  const onFim = useCallback(() => {
-    setFase("home");
-    marcarIntroExibida();
-  }, [marcarIntroExibida]);
+const onFim = useCallback(() => {
+  setFase("home");
+  marcarIntroExibida();
+}, [marcarIntroExibida]);
 
   /** Elementos ao redor do título: aparecem quando a transição começa. */
   const revelar = fase === "intro" ? "opacity-0" : "animate-rise-in";
@@ -61,7 +80,57 @@ function Inicio() {
   const tituloVisivel = fase === "home" ? "opacity-100" : "opacity-0";
 
   return (
-    <section className="mx-auto flex w-full max-w-3xl flex-col items-center px-5 pb-24 pt-28 text-center sm:pt-32">
+  <>
+    {mostrarConfirmacao && (
+      <div className="fixed inset-x-4 bottom-5 z-40 mx-auto max-w-md animate-rise-in">
+        <div
+  className={`confirmation-card ${revelar} glow-soft mt-10 w-full rounded-3xl px-6 py-7`}
+>
+  <button
+    type="button"
+    onClick={() => setMostrarConfirmacao(false)}
+    aria-label="Fechar confirmação de presença"
+    className="absolute right-4 top-4 rounded-full p-1.5 text-muted-foreground transition-colors hover:bg-white/10 hover:text-foreground"
+  >
+    <X className="size-4" />
+  </button>
+
+  <div className="flex flex-col items-center text-center">
+    <span className="mb-2 text-primary">✦</span>
+
+    <p className="font-display text-xl text-foreground sm:text-2xl">
+      Confirmação de presença
+    </p>
+
+    <span className="my-4 h-px w-12 bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
+
+    <p className="text-sm leading-relaxed text-muted-foreground">
+      Sua presença é muito especial para nós.
+    </p>
+
+    <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
+      Confirme com a{" "}
+      administração até
+    </p>
+
+<p className="mt-1 font-sans text-lg font-semibold tracking-wide text-primary">
+  1º de novembro de 2026
+</p>
+
+    <Link
+  to="/confirmar-presenca"
+  className="mt-5 inline-flex items-center justify-center gap-2 rounded-full border border-primary/30 bg-white/5 px-6 py-3 text-sm font-medium text-primary transition-transform hover:scale-[1.03] hover:bg-primary/10"
+>
+  <MessageCircle className="size-4" />
+  Confirmar presença
+</Link>
+  </div>
+</div>
+</div>
+    )}
+
+    <section
+   className="mx-auto flex w-full max-w-3xl flex-col items-center px-5 pb-24 pt-28 text-center sm:pt-32">
       {!introExibida && (
         <IntroOpening
           alvoTitulo={tituloRef}
@@ -168,6 +237,7 @@ function Inicio() {
           Deixar um recadinho
         </Link>
       </div>
-    </section>
+       </section>
+  </>
   );
 }

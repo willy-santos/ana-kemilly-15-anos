@@ -195,35 +195,35 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const [introExibida, setIntroExibida] = useState(false);
 
-  const marcarIntroExibida = () => {
-    setIntroExibida(true);
-  };
+const marcarIntroExibida = () => {
+  setIntroExibida(true);
+};
 
   return (
     <QueryClientProvider client={queryClient}>
       <IntroContext.Provider
-        value={{
-          introExibida,
-          marcarIntroExibida,
-        }}
-      >
-        <SpaceBackground />
-        <SiteNav />
+  value={{
+    introExibida,
+    marcarIntroExibida,
+  }}
+>
+  <SpaceBackground />
 
-        <main className="min-h-screen">
-          {/* Required: nested routes render here. */}
-          <SwipeNavigator>
-            <Outlet />
-          </SwipeNavigator>
-        </main>
+  <SiteNav />
 
-        <footer className="pb-8 text-center text-xs text-muted-foreground">
-          Feito por{" "}
-          <span className="text-primary">Willy Santos</span> · 15 anos de Ana Kemilly
-        </footer>
+  <main className="min-h-screen">
+    <SwipeNavigator>
+      <Outlet />
+    </SwipeNavigator>
+  </main>
 
-        <Toaster position="top-center" />
-      </IntroContext.Provider>
+  <footer className="pb-8 text-center text-xs text-muted-foreground">
+    Feito por{" "}
+    <span className="text-primary">Willy Santos</span> · 15 anos de Ana Kemilly
+  </footer>
+
+  <Toaster position="top-center" />
+</IntroContext.Provider>
     </QueryClientProvider>
   );
 }

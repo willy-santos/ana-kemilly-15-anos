@@ -109,25 +109,16 @@ export function SwipeNavigator({ children }: { children: ReactNode }) {
   }
 
   return (
-    <div
-      onPointerDown={onPointerDown}
-      onPointerMove={onPointerMove}
-      onPointerUp={finalizarGesto}
-      onPointerCancel={finalizarGesto}
-      className="min-h-screen touch-pan-y overflow-x-hidden"
-    >
-      <div
-        key={pathname}
-        className={
-          direcao === "avancar"
-            ? "animate-page-in-right"
-            : direcao === "voltar"
-              ? "animate-page-in-left"
-              : undefined
-        }
-      >
-        {children}
-      </div>
+  <div
+    onPointerDown={onPointerDown}
+    onPointerMove={onPointerMove}
+    onPointerUp={finalizarGesto}
+    onPointerCancel={finalizarGesto}
+    className="min-h-screen touch-pan-y overflow-x-hidden"
+  >
+    <div>
+      {children}
     </div>
-  );
+  </div>
+);
 }

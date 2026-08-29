@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ConfirmarPresencaRouteImport } from './routes/confirmar-presenca'
 import { Route as LocalizacaoRouteImport } from './routes/localizacao'
 import { Route as MensagemRouteImport } from './routes/mensagem'
 import { Route as PresentesRouteImport } from './routes/presentes'
@@ -18,6 +19,11 @@ import { Route as RecadinhosRouteImport } from './routes/recadinhos'
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ConfirmarPresencaRoute = ConfirmarPresencaRouteImport.update({
+  id: '/confirmar-presenca',
+  path: '/confirmar-presenca',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LocalizacaoRoute = LocalizacaoRouteImport.update({
@@ -43,6 +49,7 @@ const RecadinhosRoute = RecadinhosRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/confirmar-presenca': typeof ConfirmarPresencaRoute
   '/localizacao': typeof LocalizacaoRoute
   '/mensagem': typeof MensagemRoute
   '/presentes': typeof PresentesRoute
@@ -50,6 +57,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/confirmar-presenca': typeof ConfirmarPresencaRoute
   '/localizacao': typeof LocalizacaoRoute
   '/mensagem': typeof MensagemRoute
   '/presentes': typeof PresentesRoute
@@ -58,6 +66,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/confirmar-presenca': typeof ConfirmarPresencaRoute
   '/localizacao': typeof LocalizacaoRoute
   '/mensagem': typeof MensagemRoute
   '/presentes': typeof PresentesRoute
@@ -65,12 +74,25 @@ export interface FileRoutesById {
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/localizacao' | '/mensagem' | '/presentes' | '/recadinhos'
+  fullPaths:
+    | '/'
+    | '/confirmar-presenca'
+    | '/localizacao'
+    | '/mensagem'
+    | '/presentes'
+    | '/recadinhos'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/localizacao' | '/mensagem' | '/presentes' | '/recadinhos'
+  to:
+    | '/'
+    | '/confirmar-presenca'
+    | '/localizacao'
+    | '/mensagem'
+    | '/presentes'
+    | '/recadinhos'
   id:
     | '__root__'
     | '/'
+    | '/confirmar-presenca'
     | '/localizacao'
     | '/mensagem'
     | '/presentes'
@@ -79,6 +101,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ConfirmarPresencaRoute: typeof ConfirmarPresencaRoute
   LocalizacaoRoute: typeof LocalizacaoRoute
   MensagemRoute: typeof MensagemRoute
   PresentesRoute: typeof PresentesRoute
@@ -92,6 +115,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/confirmar-presenca': {
+      id: '/confirmar-presenca'
+      path: '/confirmar-presenca'
+      fullPath: '/confirmar-presenca'
+      preLoaderRoute: typeof ConfirmarPresencaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/localizacao': {
@@ -127,6 +157,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ConfirmarPresencaRoute: ConfirmarPresencaRoute,
   LocalizacaoRoute: LocalizacaoRoute,
   MensagemRoute: MensagemRoute,
   PresentesRoute: PresentesRoute,

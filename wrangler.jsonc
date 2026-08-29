@@ -1,3 +1,10 @@
 {
-  "name": "ana-kemilly"
+  "name": "ana-kemilly",
+  "workers_dev": true,
+  "routes": [
+    {
+      "pattern": "anakemilly.trictv.com.br",
+      "custom_domain": true
+    }
+  ]
 }

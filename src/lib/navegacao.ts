@@ -1,5 +1,6 @@
 export const abas = [
   { to: "/", label: "Início" },
+  { to: "/confirmar-presenca", label: "Confirmar presença" },
   { to: "/mensagem", label: "Mensagem" },
   { to: "/recadinhos", label: "Recadinhos" },
   { to: "/presentes", label: "Presentes" },

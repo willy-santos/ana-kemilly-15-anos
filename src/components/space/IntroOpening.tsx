@@ -140,72 +140,67 @@ let tMorph: number | undefined;
     onTransicao();
 
     requestAnimationFrame(() => {
-      morph(tituloRef.current, alvoTitulo.current);
-      morph(subtituloRef.current, alvoSubtitulo.current);
+  morph(tituloRef.current, alvoTitulo.current);
+  morph(subtituloRef.current, alvoSubtitulo.current);
 
-      // O astronauta sobe de baixo e termina exatamente sobre o da Home.
-      const astro = astronautaRef.current;
-      const alvo = alvoAstronauta.current;
+  // O astronauta sobe de baixo e termina exatamente sobre o da Home.
+  const astro = astronautaRef.current;
+  const alvo = alvoAstronauta.current;
 
-      let destino: {
-        left: number;
-        top: number;
-        width: number;
-        height: number;
-      } | null = null;
+  let destino: {
+    left: number;
+    top: number;
+    width: number;
+    height: number;
+  } | null = null;
 
-      if (alvo) {
-        let no: HTMLElement | null = alvo;
-        let top = 0;
-        let left = 0;
+  if (alvo) {
+    let no: HTMLElement | null = alvo;
+    let top = 0;
+    let left = 0;
 
-        while (no) {
-          top += no.offsetTop;
-          left += no.offsetLeft;
-          no = no.offsetParent as HTMLElement | null;
-        }
+    while (no) {
+      top += no.offsetTop;
+      left += no.offsetLeft;
+      no = no.offsetParent as HTMLElement | null;
+    }
 
-        destino = {
-          left: left - window.scrollX,
-          top: top - window.scrollY,
-          width: alvo.offsetWidth,
-          height: alvo.offsetHeight,
-        };
-      }
+    destino = {
+      left: left - window.scrollX,
+      top: top - window.scrollY,
+      width: alvo.offsetWidth,
+      height: alvo.offsetHeight,
+    };
+  }
 
-      if (astro && destino && destino.width) {
-        const distancia = Math.max(
-          destino.height * 1.2,
-          window.innerHeight - destino.top,
-        );
+  if (astro && destino && destino.width) {
+    const distancia = Math.max(
+      destino.height * 1.2,
+      window.innerHeight - destino.top,
+    );
 
-        astro.style.left = `${destino.left}px`;
-        astro.style.top = `${destino.top}px`;
-        astro.style.width = `${destino.width}px`;
-        astro.style.height = `${destino.height}px`;
+    astro.style.left = `${destino.left}px`;
+    astro.style.top = `${destino.top}px`;
+    astro.style.width = `${destino.width}px`;
+    astro.style.height = `${destino.height}px`;
 
-        astro.style.transform =
-          `translate3d(0, ${distancia}px, 0)`;
+    astro.style.transform = `translate3d(0, ${distancia}px, 0)`;
+    astro.style.opacity = "0";
 
-        astro.style.opacity = "0";
+    requestAnimationFrame(() => {
+      astro.style.willChange = "transform, opacity";
+      astro.style.transition = `
+        transform ${DURACAO_MORPH}ms ${SUAVE},
+        opacity 500ms ease-out
+      `;
 
-        requestAnimationFrame(() => {
-          astro.style.willChange = "transform, opacity";
-
-          astro.style.transition = `
-            transform ${DURACAO_MORPH}ms ${SUAVE},
-            opacity 500ms ease-out
-          `;
-
-          requestAnimationFrame(() => {
-            astro.style.transform =
-              "translate3d(0, 0, 0)";
-
-            astro.style.opacity = "1";
-          });
-        });
-      }
+      requestAnimationFrame(() => {
+        astro.style.transform = "translate3d(0, 0, 0)";
+        astro.style.opacity = "1";
+      });
     });
+  }
+});
   }, 800);
 }, INICIO_MORPH);
 
@@ -218,22 +213,23 @@ return () => {
 };
   }, [alvoTitulo, alvoSubtitulo, alvoAstronauta, onTransicao, onFim]);
 useEffect(() => {
-  if (!paginasCarregadas || !morphing) return;
+  if (!morphing) return;
 
-  const t = window.setTimeout(() => {
+  const tFim = window.setTimeout(() => {
     setEncerrada(true);
     onFim();
-  }, DURACAO_MORPH);
+  }, DURACAO_MORPH + 100);
 
-  return () => window.clearTimeout(t);
-}, [paginasCarregadas, morphing, onFim]);
-  if (encerrada) return null;
+  return () => window.clearTimeout(tFim);
+}, [morphing, onFim]);
 
-  return (
-    <div
-      aria-hidden
-      className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden px-6"
-    >
+if (encerrada) return null;
+
+return (
+  <div
+  aria-hidden
+  className="fixed inset-0 z-[60] flex items-center justify-center overflow-hidden px-6"
+>
       {/* Véu escuro: some suavemente enquanto o título viaja para a Home */}
       <div
         className="absolute inset-0 bg-deep transition-opacity ease-in-out"
