@@ -58,7 +58,7 @@ Durante o desenvolvimento, ferramentas de inteligência artificial foram utiliza
 A implementação, os testes, os ajustes e as decisões do projeto fizeram parte do processo de desenvolvimento e aprendizado.
 
 ## 👨‍💻 Desenvolvedor
-
+ 
 **Willy Santos**
 
 Estudante de Engenharia de Software interessado em desenvolvimento de software, tecnologia e aprendizado contínuo.
