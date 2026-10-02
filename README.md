@@ -1,19 +1,64 @@
 # ✨ Ana's Stellar Journey
 
-> Uma nova órbita começa...
+> Convite digital interativo para uma celebração de 15 anos, inspirado no tema **Universo Observável**. 🌌
 
-Convite digital criado especialmente para os **15 anos da Ana Kemilly**, inspirado no tema **Universo Observável**. 🌌
+## 🎯 Sobre o projeto
 
-O projeto reúne uma experiência espacial com estrelas, planetas, astronauta, animações, contagem regressiva, localização e recadinhos dos convidados.
+O **Ana's Stellar Journey** é um convite digital desenvolvido para proporcionar uma experiência interativa aos convidados, utilizando uma identidade visual inspirada no espaço.
 
-### 🛠️ Tecnologias
+O projeto reúne diferentes seções e recursos em uma experiência web responsiva, com elementos visuais, animações e navegação entre as páginas do convite.
 
-React · TypeScript · Vite · Tailwind CSS · Supabase · Cloudflare Workers
+## ✨ Funcionalidades
 
-### 🚀 Projeto público
+- 🌌 Experiência visual inspirada no universo
+- ⏳ Contagem regressiva para o evento
+- 📍 Informações sobre a localização
+- 💌 Confirmação de presença
+- 💬 Área de recadinhos
+- 📱 Interface adaptada para dispositivos móveis
+- ✨ Animações e transições entre seções
+- 🚀 Navegação entre as diferentes áreas do convite
 
-Este projeto é público e pode ser usado como **inspiração ou base para novos projetos e convites**, desde que as credenciais e informações privadas sejam mantidas fora do repositório.
+## 🛠️ Tecnologias
 
----
+- React
+- TypeScript
+- Vite
+- Tailwind CSS
+- Supabase
+- Cloudflare Workers
 
-**Feito com código, criatividade e um pouco de espaço sideral. 🌙✨**
+## 📚 Objetivo
+
+Este projeto foi desenvolvido como uma aplicação prática de desenvolvimento web, permitindo aplicar conhecimentos de:
+
+- Desenvolvimento de interfaces
+- Componentização com React
+- TypeScript
+- Gerenciamento de rotas
+- Integração com serviços externos
+- Responsividade
+- Deploy de aplicações web
+- Git e GitHub
+
+## 🌐 Projeto
+
+O projeto está publicado na web e possui deploy utilizando **Cloudflare Workers**.
+
+## 📸 Demonstração
+
+> Imagens e demonstração visual do projeto serão adicionadas futuramente.
+
+## 🤖 Uso de inteligência artificial
+
+Ferramentas de inteligência artificial foram utilizadas como apoio durante o desenvolvimento, principalmente para pesquisa, aprendizado, resolução de problemas e auxílio na implementação.
+
+O código foi desenvolvido, testado e ajustado durante o processo de construção do projeto.
+
+## 👨‍💻 Desenvolvedor
+
+**Willy Santos**
+
+Estudante de Engenharia de Software interessado em desenvolvimento de software, tecnologia e aprendizado contínuo.
+
+[GitHub](https://github.com/Willy-santos)
