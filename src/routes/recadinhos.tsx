@@ -72,9 +72,9 @@ function Recadinhos() {
 
   return (
     <PageSection eyebrow="Opcional, mas especial" title="Recadinhos">
-      <p className="-mt-4 mb-8 text-center text-sm text-muted-foreground">
-        Escreva algo bonito para a Ana Kemilly. Sua mensagem vai brilhar por aqui.
-      </p>
+      <p className="relative top-2 -mt-4 mb-8 text-center text-sm text-muted-foreground">
+  Sua mensagem vai brilhar por aqui!
+</p>
 
       <form
         onSubmit={(e) => {

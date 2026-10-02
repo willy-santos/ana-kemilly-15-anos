@@ -84,70 +84,144 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
   meta: [
     { charSet: "utf-8" },
-    { name: "viewport", content: "width=device-width, initial-scale=1" },
-    { name: "author", content: "Ana Kemilly" },
+
+    {
+      name: "viewport",
+      content: "width=device-width, initial-scale=1",
+    },
+
+    {
+      name: "author",
+      content: "Ana Kemilly",
+    },
 
     {
       name: "description",
-      content: "Um convite especial para celebrar os 15 anos de Ana Kemilly.",
+      content:
+        "Um convite especial para celebrar os 15 anos de Ana Kemilly.",
     },
 
-    { property: "og:type", content: "website" },
+    // Open Graph — WhatsApp e outras redes
+    {
+      property: "og:type",
+      content: "website",
+    },
+
+    {
+      property: "og:site_name",
+      content: "Universo Observável",
+    },
+
     {
       property: "og:title",
       content: "15 anos de Ana Kemilly · Universo Observável",
     },
+
     {
       property: "og:description",
-      content: "Um convite especial para celebrar os 15 anos de Ana Kemilly.",
+      content:
+        "Um convite especial para celebrar os 15 anos de Ana Kemilly.",
     },
+
     {
       property: "og:image",
       content:
-        "https://ana-kemilly.universoconvite.workers.dev/astronauta.png",
+        "https://ana-kemilly.universoconvite.workers.dev/astronautalink.png",
     },
+
+    {
+      property: "og:image:secure_url",
+      content:
+        "https://ana-kemilly.universoconvite.workers.dev/astronautalink.png",
+    },
+
+    {
+      property: "og:image:type",
+      content: "image/png",
+    },
+
+    {
+      property: "og:image:width",
+      content: "1200",
+    },
+
+    {
+      property: "og:image:height",
+      content: "630",
+    },
+
     {
       property: "og:image:alt",
       content: "Astronauta · 15 anos de Ana Kemilly",
     },
+
     {
       property: "og:url",
-      content: "https://ana-kemilly.universoconvite.workers.dev/",
+      content:
+        "https://ana-kemilly.universoconvite.workers.dev/",
     },
 
+    // Twitter / X
     {
       name: "twitter:card",
       content: "summary_large_image",
     },
+
     {
       name: "twitter:title",
       content: "15 anos de Ana Kemilly · Universo Observável",
     },
+
     {
       name: "twitter:description",
-      content: "Um convite especial para celebrar os 15 anos de Ana Kemilly.",
+      content:
+        "Um convite especial para celebrar os 15 anos de Ana Kemilly.",
     },
+
     {
       name: "twitter:image",
       content:
-        "https://ana-kemilly.universoconvite.workers.dev/astronauta.png",
+        "https://ana-kemilly.universoconvite.workers.dev/astronautalink.png",
     },
 
-    { name: "theme-color", content: "#150f28" },
+    {
+      name: "twitter:image:alt",
+      content: "Astronauta · 15 anos de Ana Kemilly",
+    },
+
+    {
+      name: "theme-color",
+      content: "#150f28",
+    },
   ],
 
   links: [
-    { rel: "stylesheet", href: appCss },
-    { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
-    { rel: "preconnect", href: "https://fonts.googleapis.com" },
+    {
+      rel: "stylesheet",
+      href: appCss,
+    },
+
+    {
+      rel: "icon",
+      href: "/favicon.ico",
+      type: "image/x-icon",
+    },
+
+    {
+      rel: "preconnect",
+      href: "https://fonts.googleapis.com",
+    },
+
     {
       rel: "preconnect",
       href: "https://fonts.gstatic.com",
       crossOrigin: "anonymous",
     },
+
     {
       rel: "stylesheet",
-      href: "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300&family=Manrope:wght@300;400;500;600&display=swap",
+      href:
+        "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300&family=Manrope:wght@300;400;500;600&display=swap",
     },
   ],
 }),

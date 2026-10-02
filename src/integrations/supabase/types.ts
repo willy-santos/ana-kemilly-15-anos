@@ -35,6 +35,37 @@ export type Database = {
         }
         Relationships: []
       }
+
+      confirmacoes_presenca: {
+        Row: {
+          id: string
+          identificador: string
+          familia: string
+          quantidade: number
+          nomes: string
+          observacao: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          identificador: string
+          familia: string
+          quantidade: number
+          nomes: string
+          observacao?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          identificador?: string
+          familia?: string
+          quantidade?: number
+          nomes?: string
+          observacao?: string | null
+          created_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

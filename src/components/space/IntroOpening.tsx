@@ -1,7 +1,10 @@
 import { useEffect, useRef, useState, type RefObject } from "react";
 import { useRouter } from "@tanstack/react-router";
+import {
+  prepararVerificacaoConfirmacao,
+} from "@/lib/confirmacao-preload";
 
-import astronauta from "@/assets/astronauta.png";
+import astronauta from "@/assets/astronauta.webp";
 import { evento } from "@/data/convite";
 
 /** Mesmo gerador determinístico do SpaceBackground, com outra semente. */
@@ -23,7 +26,7 @@ const estrelas = Array.from({ length: 42 }, () => ({
 }));
 
 /** A entrada do nome termina aos ~4,35s; a transição começa após uma pausa curta. */
-const INICIO_MORPH = 7250;
+const INICIO_MORPH = 8850;
 const DURACAO_MORPH = 1250;
 const SUAVE = "cubic-bezier(0.22, 1, 0.36, 1)";
 
@@ -63,38 +66,42 @@ useEffect(() => {
   let cancelado = false;
 
   const rotas = [
-    "/localizacao",
-    "/mensagem",
-    "/presentes",
-    "/recadinhos",
-  ] as const;
+  "/localizacao",
+  "/mensagem",
+  "/presentes",
+  "/recadinhos",
+  "/confirmar-presenca",
+] as const;
 
   async function carregarPaginas() {
-    setProgresso(5);
+  setProgresso(5);
 
-    let concluidas = 0;
+  // Começa a consulta ao Supabase enquanto a Intro está acontecendo.
+  prepararVerificacaoConfirmacao();
 
-    await Promise.all(
-      rotas.map(async (rota) => {
-        try {
-          await router.preloadRoute({ to: rota });
-        } finally {
-          concluidas += 1;
+  let concluidas = 0;
 
-          if (!cancelado) {
-            setProgresso(
-  5 + Math.round((concluidas / rotas.length) * 45),
-);
-          }
+  await Promise.all(
+    rotas.map(async (rota) => {
+      try {
+        await router.preloadRoute({ to: rota });
+      } finally {
+        concluidas += 1;
+
+        if (!cancelado) {
+          setProgresso(
+            5 + Math.round((concluidas / rotas.length) * 45),
+          );
         }
-      }),
-    );
+      }
+    }),
+  );
 
-   if (!cancelado) {
-  setPaginasCarregadas(true);
-  setProgresso(50);
-}
+  if (!cancelado) {
+    setPaginasCarregadas(true);
+    setProgresso(50);
   }
+}
 
   carregarPaginas();
 
@@ -117,17 +124,31 @@ useEffect(() => {
       return () => window.clearTimeout(t);
     }
 
-    const morph = (origem: HTMLElement | null, destino: HTMLElement | null) => {
-      if (!origem || !destino) return;
-      const a = origem.getBoundingClientRect();
-      const b = destino.getBoundingClientRect();
-      if (!a.width || !b.width) return;
-      const dx = b.left - a.left;
-const dy = b.top - a.top;
+    const morph = (
+  origem: HTMLElement | null,
+  destino: HTMLElement | null,
+) => {
+  if (!origem || !destino) return;
 
-origem.style.transition = `transform ${DURACAO_MORPH}ms ${SUAVE}`;
-origem.style.transform = `translate3d(${dx}px, ${dy}px, 0)`;
-    };
+  const a = origem.getBoundingClientRect();
+  const b = destino.getBoundingClientRect();
+
+  if (!a.width || !b.width) return;
+
+  const dx =
+    (b.left + b.width / 2) -
+    (a.left + a.width / 2);
+
+  const dy =
+    (b.top + b.height / 2) -
+    (a.top + a.height / 2);
+
+  origem.style.transition = `
+    transform ${DURACAO_MORPH}ms ${SUAVE}
+  `;
+
+  origem.style.transform = `translate3d(${dx}px, ${dy}px, 0)`;
+};
 let tMorph: number | undefined;
  const tInicio = window.setTimeout(() => {
   setProgresso(100);
@@ -137,66 +158,60 @@ let tMorph: number | undefined;
     onTransicao();
 
     requestAnimationFrame(() => {
-  morph(tituloRef.current, alvoTitulo.current);
-  morph(subtituloRef.current, alvoSubtitulo.current);
+  requestAnimationFrame(() => {
+    morph(tituloRef.current, alvoTitulo.current);
+    morph(subtituloRef.current, alvoSubtitulo.current);
 
-  // O astronauta sobe de baixo e termina exatamente sobre o da Home.
-  const astro = astronautaRef.current;
-  const alvo = alvoAstronauta.current;
+    // O astronauta sobe de baixo e termina exatamente sobre o da Home.
+    const astro = astronautaRef.current;
+    const alvo = alvoAstronauta.current;
 
-  let destino: {
-    left: number;
-    top: number;
-    width: number;
-    height: number;
-  } | null = null;
+    let destino: {
+      left: number;
+      top: number;
+      width: number;
+      height: number;
+    } | null = null;
 
-  if (alvo) {
-    let no: HTMLElement | null = alvo;
-    let top = 0;
-    let left = 0;
+    if (alvo) {
+      const rect = alvo.getBoundingClientRect();
 
-    while (no) {
-      top += no.offsetTop;
-      left += no.offsetLeft;
-      no = no.offsetParent as HTMLElement | null;
+      destino = {
+        left: rect.left,
+        top: rect.top,
+        width: rect.width,
+        height: rect.height,
+      };
     }
 
-    destino = {
-      left: left - window.scrollX,
-      top: top - window.scrollY,
-      width: alvo.offsetWidth,
-      height: alvo.offsetHeight,
-    };
-  }
+    if (astro && destino && destino.width) {
+      const distancia = Math.max(
+        destino.height * 1.2,
+        window.innerHeight - destino.top,
+      );
 
-  if (astro && destino && destino.width) {
-    const distancia = Math.max(
-      destino.height * 1.2,
-      window.innerHeight - destino.top,
-    );
+      astro.style.left = `${destino.left}px`;
+      astro.style.top = `${destino.top}px`;
+      astro.style.width = `${destino.width}px`;
+      astro.style.height = `${destino.height}px`;
 
-    astro.style.left = `${destino.left}px`;
-    astro.style.top = `${destino.top}px`;
-    astro.style.width = `${destino.width}px`;
-    astro.style.height = `${destino.height}px`;
-
-    astro.style.transform = `translate3d(0, ${distancia}px, 0)`;
-    astro.style.opacity = "0";
-
-    requestAnimationFrame(() => {
-      astro.style.willChange = "transform, opacity";
-      astro.style.transition = `
-        transform ${DURACAO_MORPH}ms ${SUAVE},
-        opacity 500ms ease-out
-      `;
+      astro.style.transform = `translate3d(0, ${distancia}px, 0)`;
+      astro.style.opacity = "0";
 
       requestAnimationFrame(() => {
-        astro.style.transform = "translate3d(0, 0, 0)";
-        astro.style.opacity = "1";
+        astro.style.willChange = "transform, opacity";
+        astro.style.transition = `
+          transform ${DURACAO_MORPH}ms ${SUAVE},
+          opacity 500ms ease-out
+        `;
+
+        requestAnimationFrame(() => {
+          astro.style.transform = "translate3d(0, 0, 0)";
+          astro.style.opacity = "1";
+        });
       });
-    });
-  }
+    }
+  });
 });
   }, 800);
 }, INICIO_MORPH);
@@ -287,17 +302,22 @@ return (
 </div>
       <div className="relative flex flex-col items-center text-center">
         {/* Frase 1 */}
-        <p className="animate-intro-phrase absolute w-[min(90vw,32rem)] font-display text-xl italic text-muted-foreground sm:text-2xl">
-          Em algum lugar do universo...
-        </p>
+       {/* Frases da abertura — ambas ocupam exatamente a mesma posição */}
+{/* Frases iniciais */}
+<div className="absolute inset-0 flex items-center justify-center">
+  <p
+    className="animate-intro-phrase absolute w-[min(90vw,32rem)] text-center font-display text-xl italic text-muted-foreground sm:text-2xl"
+  >
+    Em algum lugar do universo...
+  </p>
 
-        {/* Frase 2 */}
-        <p
-          className="animate-intro-phrase absolute w-[min(90vw,32rem)] font-display text-xl italic text-muted-foreground sm:text-2xl"
-          style={{ animationDelay: "1.55s" }}
-        >
-          Uma nova órbita está começando...
-        </p>
+  <p
+    className="animate-intro-phrase absolute w-[min(90vw,32rem)] text-center font-display text-xl italic text-muted-foreground sm:text-2xl"
+    style={{ animationDelay: "1.75s" }}
+  >
+    Uma nova órbita está começando...
+  </p>
+</div>
 
         {/* Momento principal */}
       <div
@@ -342,9 +362,9 @@ return (
 
  <h1
   ref={tituloRef}
-  className="relative z-10 whitespace-nowrap font-display uppercase leading-tight tracking-[0.035em]"
-  style={{
+className="relative z-10 whitespace-nowrap font-display font-[350] uppercase leading-tight tracking-[0.035em]"  style={{
     fontSize: tamanhoTitulo ? `${tamanhoTitulo}px` : undefined,
+    lineHeight: "1.1",
   }}
 >
   <span className="name-shine" data-text={evento.aniversariante}>

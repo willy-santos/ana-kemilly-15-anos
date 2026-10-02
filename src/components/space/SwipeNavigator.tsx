@@ -7,7 +7,7 @@ const LIMIAR = 35;
 
 /** Elementos onde o arrasto não deve iniciar a navegação. */
 const IGNORAR =
-  "input, textarea, select, button, a, [contenteditable], [data-no-swipe]";
+  "input, textarea, select, button, a, nav, [contenteditable], [data-no-swipe]";
 
 export function SwipeNavigator({ children }: { children: ReactNode }) {
   const navigate = useNavigate();

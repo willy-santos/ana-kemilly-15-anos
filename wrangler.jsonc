@@ -4,7 +4,8 @@
   "routes": [
     {
       "pattern": "anakemilly.trictv.com.br",
-      "custom_domain": true
+      "custom_domain": true,
+      "zone_name": "trictv.com.br"
     }
   ]
 }
