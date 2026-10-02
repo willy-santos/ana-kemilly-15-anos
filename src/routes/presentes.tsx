@@ -102,7 +102,7 @@ const copiarPix = async () => {
         {isPix ? (
           <div className="mt-6 rounded-2xl border border-primary/10 bg-primary/5 p-5">
             <p className="font-display text-lg text-foreground sm:text-xl">
-  Ana Kemilly Souza da Silva
+  Ana Kemilly 
 </p>
 
             <p className="mt-1 text-sm text-muted-foreground">
@@ -116,7 +116,7 @@ const copiarPix = async () => {
                 </p>
 
                 <p className="mt-1 break-all font-mono text-sm text-foreground">
-                  91980197356
+                  Número demonstrativo
                 </p>
               </div>
 

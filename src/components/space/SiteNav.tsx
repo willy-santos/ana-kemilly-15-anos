@@ -20,6 +20,7 @@ export function SiteNav() {
   const [temMaisAbas, setTemMaisAbas] = useState(false);
   const [confirmacaoFeita, setConfirmacaoFeita] = useState(false);
 
+  
   const arrastandoRef = useRef(false);
   const animacaoRef = useRef<number | null>(null);
   const ultimaRotaRef = useRef(pathname);
@@ -67,10 +68,6 @@ export function SiteNav() {
 
   /**
    * Faz uma transição curta e controlada do scroll.
-   *
-   * Não utiliza scrollTo({ behavior: "smooth" }),
-   * porque esse smooth pode continuar rodando enquanto
-   * o usuário troca rapidamente de rota.
    */
   const animarPara = (destino: number) => {
     const lista = listaRef.current;
@@ -98,10 +95,6 @@ export function SiteNav() {
         (agora - inicioTempo) / duracao,
       );
 
-      /*
-       * Ease-out:
-       * começa rápido e desacelera suavemente.
-       */
       const suavizado =
         1 - Math.pow(1 - progresso, 3);
 
@@ -122,9 +115,10 @@ export function SiteNav() {
   };
 
   /**
-   * Posiciona a aba ativa quando a rota muda.
+   * Quando a rota muda, posiciona a aba ativa.
    *
-   * Existe apenas UMA rotina responsável por isso.
+   * Isso continua funcionando quando a navegação acontece
+   * por clique, teclado, código ou qualquer outra forma.
    */
   useLayoutEffect(() => {
     const lista = listaRef.current;
@@ -132,26 +126,16 @@ export function SiteNav() {
 
     if (!lista || indice < 0) return;
 
-    /*
-     * Se ainda for a mesma rota, não faz nada.
-     */
     if (ultimaRotaRef.current === pathname) return;
 
-    ultimaRotaRef.current = pathname;
+ultimaRotaRef.current = pathname;
 
-    /*
-     * Nunca tenta animar enquanto o usuário está
-     * arrastando a barra.
-     */
-    if (arrastandoRef.current) {
-      cancelarAnimacao();
-      return;
-    }
+cancelarAnimacao();
 
-    /*
-     * Espera o DOM terminar de atualizar a classe
-     * da aba ativa antes de calcular as dimensões.
-     */
+if (arrastandoRef.current) {
+  return;
+}
+
     const frame = requestAnimationFrame(() => {
       if (arrastandoRef.current) return;
 
@@ -160,6 +144,8 @@ export function SiteNav() {
       if (destino === null) return;
 
       animarPara(destino);
+
+      
     });
 
     return () => {
@@ -178,186 +164,195 @@ export function SiteNav() {
 
   /**
    * Arraste horizontal da barra.
-   *
-   * Durante o arraste:
-   * - cancela animação existente;
-   * - controla diretamente o scroll;
-   * - não usa smooth.
    */
   useEffect(() => {
-    const lista = listaRef.current;
+  const lista = listaRef.current;
 
-    if (!lista) return;
+  if (!lista) return;
 
-    let inicioX = 0;
-    let scrollInicial = 0;
-    let houveMovimento = false;
-    let pointerIdAtivo: number | null = null;
+  let inicioX = 0;
+  let scrollInicial = 0;
+  let pointerIdAtivo: number | null = null;
+  let houveMovimento = false;
+  let arrasteIniciado = false;
 
-    const iniciarArraste = (event: PointerEvent) => {
-      if (
-        event.pointerType === "mouse" &&
-        event.button !== 0
-      ) {
+  const iniciarArraste = (event: PointerEvent) => {
+    if (
+      event.pointerType === "mouse" &&
+      event.button !== 0
+    ) {
+      return;
+    }
+
+    cancelarAnimacao();
+
+    pointerIdAtivo = event.pointerId;
+    inicioX = event.clientX;
+    scrollInicial = lista.scrollLeft;
+
+    houveMovimento = false;
+    arrasteIniciado = false;
+  };
+
+  const acompanharArraste = (event: PointerEvent) => {
+    if (
+      pointerIdAtivo !== event.pointerId
+    ) {
+      return;
+    }
+
+    const deslocamento =
+      event.clientX - inicioX;
+
+    /*
+     * Um simples clique não inicia arraste.
+     * Só consideramos arraste depois de 8px.
+     */
+    if (!arrasteIniciado) {
+      if (Math.abs(deslocamento) < 8) {
         return;
       }
 
-      cancelarAnimacao();
-
+      arrasteIniciado = true;
       arrastandoRef.current = true;
-      pointerIdAtivo = event.pointerId;
-
-      inicioX = event.clientX;
-      scrollInicial = lista.scrollLeft;
-      houveMovimento = false;
+      houveMovimento = true;
 
       lista.setPointerCapture?.(
         event.pointerId,
       );
-    };
+    }
 
-    const acompanharArraste = (event: PointerEvent) => {
+    lista.scrollLeft =
+      scrollInicial - deslocamento;
+  };
+
+  const finalizarArraste = (event: PointerEvent) => {
+    if (
+      pointerIdAtivo !== event.pointerId
+    ) {
+      return;
+    }
+
+    const foiArraste = arrasteIniciado;
+
+    arrastandoRef.current = false;
+
+    try {
       if (
-        !arrastandoRef.current ||
-        pointerIdAtivo !== event.pointerId
+        lista.hasPointerCapture(event.pointerId)
       ) {
-        return;
+        lista.releasePointerCapture(
+          event.pointerId,
+        );
       }
+    } catch {
+      // Ponteiro já liberado.
+    }
 
-      const deslocamento =
-        event.clientX - inicioX;
+    pointerIdAtivo = null;
+    arrasteIniciado = false;
 
-      if (Math.abs(deslocamento) > 6) {
-        houveMovimento = true;
-      }
+    /*
+     * Se foi apenas clique, NÃO fazemos nada.
+     * O Link recebe o clique normalmente.
+     */
+    if (!foiArraste) {
+      houveMovimento = false;
+      return;
+    }
 
-      lista.scrollLeft =
-        scrollInicial - deslocamento;
-    };
+    /*
+     * Depois do arraste, encontra a aba
+     * mais próxima do centro.
+     */
+    const centroLista =
+      lista.scrollLeft +
+      lista.clientWidth / 2;
 
-    const finalizarArraste = (event: PointerEvent) => {
-      if (
-        !arrastandoRef.current ||
-        pointerIdAtivo !== event.pointerId
-      ) {
-        return;
-      }
+    let melhorIndice = 0;
+    let menorDistancia = Infinity;
 
-      arrastandoRef.current = false;
+    itensRef.current.forEach(
+      (item, indice) => {
+        if (!item) return;
 
-      try {
+        const centroItem =
+          item.offsetLeft +
+          item.offsetWidth / 2;
+
+        const distancia = Math.abs(
+          centroItem - centroLista,
+        );
+
         if (
-          lista.hasPointerCapture(event.pointerId)
+          distancia < menorDistancia
         ) {
-          lista.releasePointerCapture(
-            event.pointerId,
-          );
+          menorDistancia = distancia;
+          melhorIndice = indice;
         }
-      } catch {
-        // Ponteiro já liberado pelo navegador.
-      }
+      },
+    );
 
-      pointerIdAtivo = null;
+    const destino =
+      calcularScrollDaAba(melhorIndice);
 
-      /*
-       * Se foi apenas um clique, não altera o scroll.
-       */
-      if (!houveMovimento) {
-        houveMovimento = false;
-        return;
-      }
+    if (destino !== null) {
+      animarPara(destino);
+    }
 
-      /*
-       * Depois do arraste, encaixa suavemente
-       * na aba mais próxima do centro.
-       */
-      const centroLista =
-        lista.scrollLeft +
-        lista.clientWidth / 2;
+    houveMovimento = false;
+  };
 
-      let melhorIndice = 0;
-      let menorDistancia = Infinity;
+  const cancelarArrasteEvento = () => {
+    arrastandoRef.current = false;
+    pointerIdAtivo = null;
+    arrasteIniciado = false;
+    houveMovimento = false;
+    cancelarAnimacao();
+  };
 
-      itensRef.current.forEach(
-        (item, indice) => {
-          if (!item) return;
+  lista.addEventListener(
+    "pointerdown",
+    iniciarArraste,
+  );
 
-          const centroItem =
-            item.offsetLeft +
-            item.offsetWidth / 2;
+  lista.addEventListener(
+    "pointermove",
+    acompanharArraste,
+  );
 
-          const distancia = Math.abs(
-            centroItem - centroLista,
-          );
+  lista.addEventListener(
+    "pointerup",
+    finalizarArraste,
+  );
 
-          if (
-            distancia < menorDistancia
-          ) {
-            menorDistancia = distancia;
-            melhorIndice = indice;
-          }
-        },
-      );
+  lista.addEventListener(
+    "pointercancel",
+    cancelarArrasteEvento,
+  );
 
-      const destino =
-        calcularScrollDaAba(melhorIndice);
-
-      if (destino !== null) {
-        animarPara(destino);
-      }
-
-      houveMovimento = false;
-    };
-
-    const cancelarArrasteEvento = () => {
-      arrastandoRef.current = false;
-      houveMovimento = false;
-      pointerIdAtivo = null;
-      cancelarAnimacao();
-    };
-
-    lista.addEventListener(
+  return () => {
+    lista.removeEventListener(
       "pointerdown",
       iniciarArraste,
     );
 
-    lista.addEventListener(
+    lista.removeEventListener(
       "pointermove",
       acompanharArraste,
     );
 
-    lista.addEventListener(
+    lista.removeEventListener(
       "pointerup",
       finalizarArraste,
     );
 
-    lista.addEventListener(
+    lista.removeEventListener(
       "pointercancel",
       cancelarArrasteEvento,
     );
-
-    return () => {
-      lista.removeEventListener(
-        "pointerdown",
-        iniciarArraste,
-      );
-
-      lista.removeEventListener(
-        "pointermove",
-        acompanharArraste,
-      );
-
-      lista.removeEventListener(
-        "pointerup",
-        finalizarArraste,
-      );
-
-      lista.removeEventListener(
-        "pointercancel",
-        cancelarArrasteEvento,
-      );
-    };
-  }, []);
+  };
+}, []);
 
   /**
    * Verifica se a confirmação foi concluída.
@@ -525,7 +520,7 @@ export function SiteNav() {
       <nav className="relative glass-panel mx-auto w-full max-w-[calc(100vw-1.5rem)] rounded-full">
         <ul
           ref={listaRef}
-          className="no-scrollbar flex w-full touch-pan-x items-center gap-1 overflow-x-auto overscroll-x-contain px-1.5 py-1.5 sm:justify-center"
+          className="no-scrollbar flex w-full touch-pan-x select-none items-center gap-1 overflow-x-auto overscroll-x-contain px-1.5 py-1.5 sm:justify-center"
         >
           {abas.map((aba, index) => (
             <li
@@ -536,23 +531,23 @@ export function SiteNav() {
               }}
               className="shrink-0"
             >
-              <Link
-                to={aba.to}
-                activeOptions={{
-                  exact: aba.to === "/",
-                }}
-                activeProps={{
-                  className:
-                    "bg-primary/20 text-foreground glow-soft border-primary/30",
-                }}
-                inactiveProps={{
-                  className:
-                    "border-transparent text-muted-foreground hover:text-foreground hover:bg-primary/10",
-                }}
-                className="block whitespace-nowrap rounded-full border px-3.5 py-1.5 text-[0.78rem] tracking-[0.08em] transition-colors sm:text-sm"
-              >
-                {aba.label}
-              </Link>
+             <Link
+  to={aba.to}
+  activeOptions={{
+    exact: aba.to === "/",
+  }}
+  activeProps={{
+    className:
+      "bg-primary/20 text-foreground glow-soft border-primary/30",
+  }}
+  inactiveProps={{
+    className:
+      "border-transparent text-muted-foreground hover:text-foreground hover:bg-primary/10",
+  }}
+  className="block whitespace-nowrap rounded-full border px-3.5 py-1.5 text-[0.78rem] tracking-[0.08em] transition-colors sm:text-sm"
+>
+  {aba.label}
+</Link>
             </li>
           ))}
         </ul>

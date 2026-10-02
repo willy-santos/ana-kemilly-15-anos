@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, MessageCircle } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -97,230 +97,67 @@ const [verificandoConfirmacao, setVerificandoConfirmacao] =
   /**
    * Abre o WhatsApp.
    */
-  const enviarParaWhatsapp = () => {
-    if (
-      !familia.trim() ||
-      !quantidade ||
-      !nomes.trim()
-    ) {
+ const confirmarPresenca = async () => {
+  if (
+    !familia.trim() ||
+    !quantidade ||
+    !nomes.trim()
+  ) {
+    return;
+  }
+
+  const identificador = obterIdentificador();
+
+  try {
+    const { data: existente, error: erroBusca } =
+      await supabase
+        .from("confirmacoes_presenca")
+        .select("id")
+        .eq("identificador", identificador)
+        .maybeSingle();
+
+    if (erroBusca) {
+      console.error(
+        "Erro ao verificar confirmação existente:",
+        erroBusca,
+      );
       return;
     }
 
-    const identificador = obterIdentificador();
+    if (!existente) {
+      const { error } = await supabase
+        .from("confirmacoes_presenca")
+        .insert({
+          identificador,
+          familia: familia.trim(),
+          quantidade: Number(quantidade),
+          nomes: nomes.trim(),
+          observacao: observacao.trim() || null,
+        });
 
-    /**
-     * Guarda temporariamente que este navegador
-     * está no processo de confirmação.
-     */
-    sessionStorage.setItem(
-      "confirmacaoWhatsapp",
-      "pendente",
+      if (error) {
+        console.error(
+          "Erro ao registrar confirmação:",
+          error,
+        );
+        return;
+      }
+    }
+
+    setConfirmacaoConcluida(true);
+  } catch (error) {
+    console.error(
+      "Erro ao confirmar presença:",
+      error,
     );
-
-   const mensagem = `Olá! Gostaria de confirmar a presença da minha família nos 15 anos da Ana Kemilly.
-
-Família: ${familia}
-Quantidade de pessoas: ${quantidade}
-Nomes dos convidados: ${nomes}${
-  observacao.trim()
-    ? `\nObservação: ${observacao}`
-    : ""
-}`;
-
-const url =
-  `https://wa.me/559182538442?text=${encodeURIComponent(mensagem)}`;
-
-window.open(url, "_blank");
-
-    /**
-     * Guarda os dados para podermos registrar a confirmação
-     * quando a pessoa voltar para o site.
-     */
-    sessionStorage.setItem(
-      "confirmacaoIdentificador",
-      identificador,
-    );
-
-    sessionStorage.setItem(
-      "confirmacaoFamilia",
-      familia.trim(),
-    );
-
-    sessionStorage.setItem(
-      "confirmacaoQuantidade",
-      quantidade,
-    );
-
-    sessionStorage.setItem(
-      "confirmacaoNomes",
-      nomes.trim(),
-    );
-
-    sessionStorage.setItem(
-      "confirmacaoObservacao",
-      observacao.trim(),
-    );
-
-    window.open(url, "_blank");
-  };
+  }
+};
 
   /**
    * Quando a pessoa volta do WhatsApp,
    * registra a confirmação permanentemente no Supabase.
    */
-  useEffect(() => {
-    const registrarConfirmacaoAoVoltar = async () => {
-      if (
-        document.visibilityState !== "visible"
-      ) {
-        return;
-      }
-
-      const status =
-        sessionStorage.getItem(
-          "confirmacaoWhatsapp",
-        );
-
-      if (status !== "pendente") {
-        return;
-      }
-
-      const identificador =
-        sessionStorage.getItem(
-          "confirmacaoIdentificador",
-        );
-
-      const familia =
-        sessionStorage.getItem(
-          "confirmacaoFamilia",
-        );
-
-      const quantidade =
-        sessionStorage.getItem(
-          "confirmacaoQuantidade",
-        );
-
-      const nomes =
-        sessionStorage.getItem(
-          "confirmacaoNomes",
-        );
-
-      const observacao =
-        sessionStorage.getItem(
-          "confirmacaoObservacao",
-        );
-
-      if (
-        !identificador ||
-        !familia ||
-        !quantidade ||
-        !nomes
-      ) {
-        return;
-      }
-
-      /**
-       * Antes de inserir, verifica novamente
-       * para evitar duplicação.
-       */
-      const { data: existente, error: erroBusca } =
-        await supabase
-          .from("confirmacoes_presenca")
-          .select("id")
-          .eq("identificador", identificador)
-          .maybeSingle();
-
-      if (erroBusca) {
-        console.error(
-          "Erro ao verificar confirmação existente:",
-          erroBusca,
-        );
-
-        return;
-      }
-
-      if (!existente) {
-        const { error } = await supabase
-          .from("confirmacoes_presenca")
-          .insert({
-            identificador,
-            familia,
-            quantidade: Number(quantidade),
-            nomes,
-            observacao: observacao || null,
-          });
-
-        if (error) {
-          console.error(
-            "Erro ao registrar confirmação:",
-            error,
-          );
-
-          return;
-        }
-      }
-
-      /**
-       * Confirma localmente também.
-       */
-      sessionStorage.setItem(
-        "confirmacaoWhatsapp",
-        "concluida",
-      );
-
-      setConfirmacaoConcluida(true);
-
-      /**
-       * Limpa os dados temporários.
-       */
-      sessionStorage.removeItem(
-        "confirmacaoIdentificador",
-      );
-
-      sessionStorage.removeItem(
-        "confirmacaoFamilia",
-      );
-
-      sessionStorage.removeItem(
-        "confirmacaoQuantidade",
-      );
-
-      sessionStorage.removeItem(
-        "confirmacaoNomes",
-      );
-
-      sessionStorage.removeItem(
-        "confirmacaoObservacao",
-      );
-    };
-
-    const aoVoltarParaOSite = () => {
-      registrarConfirmacaoAoVoltar();
-    };
-
-    document.addEventListener(
-      "visibilitychange",
-      aoVoltarParaOSite,
-    );
-
-    window.addEventListener(
-      "pageshow",
-      aoVoltarParaOSite,
-    );
-
-    return () => {
-      document.removeEventListener(
-        "visibilitychange",
-        aoVoltarParaOSite,
-      );
-
-      window.removeEventListener(
-        "pageshow",
-        aoVoltarParaOSite,
-      );
-    };
-  }, []);
-
+  
     if (verificandoConfirmacao) {
     return (
       <PageSection
@@ -443,13 +280,12 @@ window.open(url, "_blank");
             </div>
 
             <button
-              type="button"
-              onClick={enviarParaWhatsapp}
-              className="mt-8 inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-medium text-primary-foreground transition-transform hover:scale-[1.03]"
-            >
-              <MessageCircle className="size-4" />
-              Confirmar presença
-            </button>
+  type="button"
+  onClick={confirmarPresenca}
+  className="mt-8 inline-flex w-full items-center justify-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-medium text-primary-foreground transition-transform hover:scale-[1.03]"
+>
+  Confirmar presença
+</button>
 
           </div>
         </div>

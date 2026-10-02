@@ -14,20 +14,15 @@ export const evento = {
   /** Data/hora oficial do evento (horário de Belém/PA, UTC-3) */
   dataISO: "2026-11-15T10:00:00-03:00",
   endereco: {
-    linha1: "Passagem Jardim Brasil, 54",
-    linha2: "Levilândia, Ananindeua - PA",
-    cep: "66650-204",
-    completo: "Passagem Jardim Brasil, 54 - Levilândia, Ananindeua - PA, 66650-204",
-  },
+  linha1: "Localização demonstrativa",
+  linha2: "Endereço removido nesta versão de portfólio",
+  cep: "00000-000",
+  completo: "Localização demonstrativa",
+},
 } as const;
 
-export const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-  evento.endereco.completo,
-)}`;
-
-export const mapsEmbedUrl = `https://www.google.com/maps?q=${encodeURIComponent(
-  evento.endereco.completo,
-)}&output=embed`;
+export const mapsUrl = "#";
+export const mapsEmbedUrl = "";
 
 /**
  * Mensagem da aniversariante.
@@ -63,7 +58,7 @@ export const presentes: Presente[] = [
     descricao: "Tamanho 37",
   },
   {
-    nome: "Pix",
-    descricao: "Ana Kemilly Souza da Silva · Banco PicPay · Chave Pix: 91980197356",
-  },
+  nome: "Pix",
+  descricao: "Demonstração de opção de presente",
+},
 ];
