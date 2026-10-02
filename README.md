@@ -41,9 +41,15 @@ Este projeto foi desenvolvido como uma aplicação prática de desenvolvimento w
 - Deploy de aplicações web
 - Git e GitHub
 
+## 🌐 Demo
+
+🚀 **[Visualizar Demo](https://ana-kemilly-demo.universoconvite.workers.dev/)**
+
+Versão demonstrativa do convite digital, desenvolvida para apresentação do projeto e de suas funcionalidades.
+
 ## 📸 Demonstração
 
-Imagens do projeto serão adicionadas nesta seção.
+A demonstração apresenta a experiência completa do convite, incluindo navegação entre seções, animações, informações do evento, localização, presentes e confirmação de presença.
 
 ## 🤖 Desenvolvimento
 
@@ -58,4 +64,3 @@ A implementação, os testes, os ajustes e as decisões do projeto fizeram parte
 Estudante de Engenharia de Software interessado em desenvolvimento de software, tecnologia e aprendizado contínuo.
 
 [GitHub](https://github.com/Willy-santos)
-
