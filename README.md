@@ -41,12 +41,6 @@ Este projeto foi desenvolvido como uma aplicação prática de desenvolvimento w
 - Deploy de aplicações web
 - Git e GitHub
 
-## 🌐 Projeto publicado
-
-🚀 **[Acessar o projeto](https://ana-kemilly.universoconvite.workers.dev/)**
-
-O projeto está publicado na web utilizando **Cloudflare Workers**.
-
 ## 📸 Demonstração
 
 Imagens do projeto serão adicionadas nesta seção.
@@ -58,9 +52,10 @@ Durante o desenvolvimento, ferramentas de inteligência artificial foram utiliza
 A implementação, os testes, os ajustes e as decisões do projeto fizeram parte do processo de desenvolvimento e aprendizado.
 
 ## 👨‍💻 Desenvolvedor
- 
+
 **Willy Santos**
 
 Estudante de Engenharia de Software interessado em desenvolvimento de software, tecnologia e aprendizado contínuo.
 
 [GitHub](https://github.com/Willy-santos)
+
